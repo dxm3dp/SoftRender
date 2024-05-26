@@ -2,6 +2,7 @@
 #define _CPP_LANG_H_
 
 #include <cassert>
+#include <cmath>
 
 #include <iostream>
 
@@ -12,6 +13,8 @@
 #include <unordered_set>
 #include <unordered_map>
 #include <algorithm>
+#include <fstream>
+#include <sstream>
 
 // must be C++11 or later
 #if __cplusplus < 201103

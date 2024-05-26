@@ -6,6 +6,7 @@ set(CMAKE_CXX_STANDARD 11)
 file(GLOB SRC
     ${CMAKE_CURRENT_SOURCE_DIR}/source/*.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/source/common/*.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/source/geometry/*.cpp
     )
 
 add_executable(SoftRender ${SRC})
