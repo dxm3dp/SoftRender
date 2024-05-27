@@ -18,7 +18,7 @@ struct vec
 
     T& operator[](const size_t i)
     {
-        static_assert(i < DIM);
+        static_assert(i < DIM); // 这里为何可以用静态断言？
         return data[i];
     }
 
@@ -77,7 +77,6 @@ struct vec<3, T>
 
     T x, y, z;
 };
-
 
 END_NAMESPACE(SoftRender)
 
