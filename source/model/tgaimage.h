@@ -69,10 +69,25 @@ struct TGAColor
 class TGAImage
 {
 public:
+    enum Format
+    {
+        GRAYSCALE = 1,
+        RGB = 3,
+        RGBA = 4
+    };
+
+public:
     TGAImage();
     TGAImage(int w, int h, int bpp);
     TGAImage(const TGAImage& img);
     ~TGAImage();
+
+    TGAImage& operator=(const TGAImage& img);
+
+    bool read_tga_file(const char* filename);
+
+private:
+    bool load_rle_data(std::ifstream& in);
 
 private:
     unsigned char* data;
