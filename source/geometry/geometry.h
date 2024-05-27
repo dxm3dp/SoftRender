@@ -78,6 +78,11 @@ struct vec<3, T>
     T x, y, z;
 };
 
+typedef vec<2, float> vec2f;
+typedef vec<2, int> vec2i;
+typedef vec<3, float> vec3f;
+typedef vec<3, int> vec3i;
+
 END_NAMESPACE(SoftRender)
 
 #endif // _GEOMETRY_H_
