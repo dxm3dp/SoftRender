@@ -79,6 +79,23 @@ struct vec<3, T>
 };
 
 template <size_t Rows, size_t Cols, typename T>
+struct mat;
+
+template <size_t Dim, typename T>
+struct determinant
+{
+    static T det(const mat<Dim, Dim, T> &src)
+    {
+        T ret;
+        for(size_t i = 0; i < Dim; i++)
+        {
+            ret += src[0][i] * src.cofactor(0, i);
+        }
+        return ret;
+    }
+};
+
+template <size_t Rows, size_t Cols, typename T>
 struct mat
 {
 public:
@@ -137,6 +154,29 @@ public:
             for (size_t j = 0; j < Cols - 1; j++)
             {
                 ret[i][j] = rows[i < row ? i : i + 1][j < col ? j : j + 1];
+            }
+        }
+        return ret;
+    }
+
+    T det() const
+    {
+        return determinant<Cols, T>::det(*this);
+    }
+
+    T cofactor(size_t row, size_t col) const
+    {
+        return get_minor(row, col).det() * (((row + col) % 2) ? -1 : 1);
+    }
+
+    mat<Rows, Cols, T> adjusgate() const
+    {
+        mat<Rows, Cols, T> ret;
+        for(size_t i = 0; i < Rows; i++)
+        {
+            for (size_t j = 0; j < Cols; j++)
+            {
+                ret[i][j] = cofactor(i, j);
             }
         }
         return ret;
