@@ -65,6 +65,21 @@ Model::Model(const char * filename)
         }
     }
     LOGI("vertices: %d, texcoords: %d, normals: %d, faces: %d", vertices.size(), texcoords.size(), normals.size(), faces.size());
+    load_texture(filename, "_diffuse.tga", diffusemap);
+    load_texture(filename, "_nm_tangent.tga", normalmap);
+}
+
+void Model::load_texture(const char * filename, const char * suffix, TGAImage & tex)
+{
+    std::string texfile(filename);
+    size_t dot = texfile.find_last_of(".");
+    if (dot != std::string::npos)
+    {
+        texfile = texfile.substr(0, dot) + std::string(suffix);
+        bool ret = tex.read_tga_file(texfile.c_str());
+        LOGI("texture file: %s, %s", texfile.c_str(), ret ? "loaded" : "failed");
+        //tex.flip_vertically(); // 为什么要做这个操作？
+    }
 }
 
 END_NAMESPACE(SoftRender)
