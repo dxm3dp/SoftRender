@@ -110,7 +110,6 @@ bool TGAImage::read_tga_file(const char * filename)
 
 bool TGAImage::load_rle_data(std::ifstream & in)
 {
-    // TODO: 实现 RLE 数据加载
     unsigned long pixelcount = width * height;
     unsigned long currentpixel = 0;
     unsigned long currentbyte = 0;
@@ -156,7 +155,19 @@ bool TGAImage::load_rle_data(std::ifstream & in)
                 LOGE("an error occured while reading the header");
                 return false;
             }
-
+            for(int i = 0; i < chunkheader; i++)
+            {
+                for(int t = 0; t < bytespp; t++)
+                {
+                    data[currentbyte++] = colorbuffer.bgra[t];
+                }
+                currentpixel++;
+                if (currentpixel > pixelcount)
+                {
+                    LOGE("Too many pixels read");
+                    return false;
+                }
+            }
         }
     }
     while (currentpixel < pixelcount);
