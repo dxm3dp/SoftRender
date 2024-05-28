@@ -61,8 +61,6 @@ bool TGAImage::read_tga_file(const char * filename)
         return false;
     }
 
-    // 读取头部信息
-
     TGA_Header header;
     in.read((char *)&header, sizeof(header));
     if (!in.good())
@@ -80,7 +78,7 @@ bool TGAImage::read_tga_file(const char * filename)
         in.close();
         return false;
     }
-    // 读取数据
+
     int nbytes = width * height * bytespp;
     data = new unsigned char[nbytes];
     if ( 2 == header.datatypecode || 3 == header.datatypecode)      // no compression
@@ -96,15 +94,90 @@ bool TGAImage::read_tga_file(const char * filename)
     }
     else if (10 == header.datatypecode || 11 == header.datatypecode)// RLE compression
     {
-        // 加载 rle 数据
+        if (!load_rle_data(in))
+        {
+            LOGE("an error occured while reading the data");
+            in.close();
+            delete [] data;
+            return false;
+        }
     }
-    else
+    else // unknown file format
     {
         LOGE("Unknown file format %d", header.datatypecode);
         in.close();
+        delete [] data;
         return false;
     }
 
+    if (!(header.imagedescriptor & 0x20))
+    {
+        flip_vertically();
+    }
+    if (header.imagedescriptor & 0x10)
+    {
+        flip_horizontally();
+    }
+    LOGI("%d x %d / %d", width, height, bytespp * 8);
+    in.close();
+    return true;
+}
+
+bool TGAImage::flip_vertically()
+{
+    if (nullptr == data)
+        return false;
+
+    unsigned long bytes_per_line = width * bytespp;
+    unsigned char * line = new unsigned char[bytes_per_line];
+    int half = height >> 1;
+    for(int i = 0; i < half; i++)
+    {
+        unsigned char * l1 = data + i * bytes_per_line;
+        unsigned char * l2 = data + (height - 1 - i) * bytes_per_line;
+        memmove((void *)line, (void *)l1, bytes_per_line);
+        memmove((void *)l1, (void *)l2, bytes_per_line);
+        memmove((void *)l2, (void *)line, bytes_per_line);
+    }
+    delete [] line;
+    return true;
+}
+
+bool TGAImage::flip_horizontally()
+{
+    if (nullptr == data)
+        return false;
+
+    int half = width >> 1;
+    for(int i = 0; i < half; i++)
+    {
+        for(int j = 0; j < height; j++)
+        {
+            TGAColor c1 = get(i, j);
+            TGAColor c2 = get(width - 1 - i, j);
+            set(i, j, c2);
+            set(width - 1 - i, j, c1);
+        }
+    }
+    return true;
+}
+
+TGAColor TGAImage::get(int x, int y) const
+{
+    if (!data || x < 0 || y < 0 || x >= width || y >= height)
+    {
+        return TGAColor();
+    }
+    return TGAColor(data + (x + y * width) * bytespp, bytespp);
+}
+
+bool TGAImage::set(int x, int y, const TGAColor& c)
+{
+    if (!data || x < 0 || y < 0 || x >= width || y >= height)
+    {
+        return false;
+    }
+    memcpy((void*)(data + (x + y * width) * bytespp), (void *)c.bgra, bytespp);
     return true;
 }
 

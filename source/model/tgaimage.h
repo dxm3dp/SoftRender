@@ -85,6 +85,10 @@ public:
     TGAImage& operator=(const TGAImage& img);
 
     bool read_tga_file(const char* filename);
+    bool flip_vertically();
+    bool flip_horizontally();
+    TGAColor get(int x, int y) const;
+    bool set(int x, int y, const TGAColor & c);
 
 private:
     bool load_rle_data(std::ifstream& in);
