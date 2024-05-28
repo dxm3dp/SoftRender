@@ -182,6 +182,23 @@ public:
         return ret;
     }
 
+    mat<Rows, Cols, T> invert_transpose() const
+    {
+        mat<Rows, Cols, T> ret = adjusgate();
+        T det = ret[0] * rows[0];
+        return ret / det; // 对这里的结果还有疑问
+    }
+
+    mat<Cols, Rows, T> transpose() const
+    {
+        mat<Cols, Rows, T> ret;
+        for(size_t i = 0; i < Cols; i++)
+        {
+            ret[i] = this->get_col(i);
+        }
+        return ret;
+    }
+
 private:
     vec<Cols, T> rows[Rows];
 };
