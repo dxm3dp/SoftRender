@@ -12,7 +12,7 @@ int main(int argc, char** argv)
     std::string filePath = "./models/diablo3/diablo3_pose.obj";
     SoftRender::Model model(filePath.c_str());
 
-    // TODO 开始实现顶点着色过程
+    // TODO 实现封装
 
     return 0;
 }
