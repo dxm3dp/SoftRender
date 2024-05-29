@@ -18,7 +18,7 @@ struct vec
 
     T& operator[](const size_t i)
     {
-        static_assert(i < DIM); // 这里为何可以用静态断言？
+        static_assert(i < DIM); // 这里为何可以用静态断言？应该是不可以。
         return data[i];
     }
 
@@ -52,6 +52,11 @@ struct vec<2, T>
         return i == 0 ? x : y;
     }
 
+    float norm() const
+    {
+        return std::sqrt(x * x + y * y);
+    }
+
     T x, y;
 };
 
@@ -73,6 +78,11 @@ struct vec<3, T>
     {
         assert(i < 3);
         return i == 0 ? x : (i == 1 ? y : z);
+    }
+
+    float norm() const
+    {
+        return std::sqrt(x * x + y * y + z * z);
     }
 
     T x, y, z;
@@ -304,11 +314,77 @@ private:
     vec<Cols, T> rows[Rows];
 };
 
+// ---------------------------------------------------------------------------
+
+template <size_t Rows, size_t Cols, typename T>
+vec<Rows, T> operator*(const mat<Rows, Cols, T> &m, const vec<Cols, T> &v)
+{
+    vec<Rows, T> ret;
+    for(size_t i = 0; i < Rows; i++)
+    {
+        ret[i] = m[i] * v;
+    }
+    return ret;
+}
+
+template <size_t R1, size_t C1, size_t C2, typename T>
+mat<R1, C2, T> operator*(const mat<R1, C1, T> &m1, const mat<C1, C2, T> &m2)
+{
+    mat<R1, C2, T> ret;
+    for(size_t i = 0; i < R1; i++)
+    {
+        for(size_t j = 0; j < C2; j++)
+        {
+            ret[i][j] = m1[i] * m2.get_col(j);
+        }
+    }
+    return ret;
+}
+
+template <size_t Rows, size_t Cols, typename T>
+mat<Rows, Cols, T> operator*(const mat<Rows, Cols, T> &m, const T &factor)
+{
+    mat<Rows, Cols, T> ret;
+    for (size_t i = 0; i < Rows; i++)
+    {
+        ret[i] = m[i] * factor;
+    }
+    return ret;
+}
+
+template <size_t Rows, size_t Cols, typename T>
+mat<Rows, Cols, T> operator/(const mat<Rows, Cols, T> &m, const T &div)
+{
+    mat<Rows, Cols, T> ret;
+    for (size_t i = 0; i < Rows; i++)
+    {
+        for (size_t j = 0; j < Cols; j++)
+        {
+            ret[i][j] = m[i][j] / div;
+        }
+    }
+    return ret;
+}
+
+template <size_t Rows, size_t Cols, typename T>
+std::ostream& operator<<(std::ostream &out, const mat<Rows, Cols, T> &m)
+{
+    for(size_t i = 0; i < Rows; i++)
+    {
+        out << m[i] << std::endl;
+    }
+    return out;
+}
+
+// ---------------------------------------------------------------------------
 
 typedef vec<2, float> vec2f;
 typedef vec<2, int> vec2i;
 typedef vec<3, float> vec3f;
 typedef vec<3, int> vec3i;
+typedef vec<4, float> vec4f;
+typedef mat<3, 3, float> mat3x3;
+typedef mat<4, 4, float> mat4x4;
 
 END_NAMESPACE(SoftRender)
 
