@@ -6,6 +6,7 @@ BEGIN_NAMESPACE(SoftRender)
 mat4x4 g_model_mat;
 mat4x4 g_view_mat;
 mat4x4 g_projection_mat;
+mat4x4 g_viewport_mat;
 
 void get_model_matrix(vec3f position, vec3f rotation, vec3f scale)
 {
@@ -76,6 +77,18 @@ void get_projection_matrix(float fov, float aspect, float zNear, float zFar)
     projection_mat[3][2] = -1.f;
 
     g_projection_mat = projection_mat;
+}
+
+void get_viewport_matrix(int x, int y, int width, int height)
+{
+    mat4x4 viewport_mat = mat4x4::identity();
+    viewport_mat[0][0] = width / 2;
+    viewport_mat[1][1] = height / 2;
+    viewport_mat[0][3] = x + width / 2;
+    viewport_mat[1][3] = y + height / 2;
+    //viewport_mat[2][3] = 1; // ?
+
+    g_viewport_mat = viewport_mat;
 }
 
 END_NAMESPACE(SoftRender)
