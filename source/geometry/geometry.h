@@ -78,6 +78,107 @@ struct vec<3, T>
     T x, y, z;
 };
 
+// ---------------------------------------------------------------------------
+
+template <size_t Dim, typename T>
+T operator*(const vec<Dim, T> &lhs, const vec<Dim, T> &rhs)
+{
+    T ret;
+    for(size_t i = 0; i < Dim; i++)
+    {
+        ret += lhs[i] * rhs[i];
+    }
+    return ret;
+}
+
+template <size_t Dim, typename T>
+vec<Dim, T> operator+(const vec<Dim, T> &lhs, const vec<Dim, T> &rhs)
+{
+    vec<Dim, T> ret;
+    for(size_t i = 0; i < Dim; i++)
+    {
+        ret[i] = lhs[i] + rhs[i];
+    }
+    return ret;
+}
+
+template <size_t Dim, typename T>
+vec<Dim, T> operator-(const vec<Dim, T> &lhs, const vec<Dim, T> &rhs)
+{
+    vec<Dim, T> ret;
+    for(size_t i = 0; i < Dim; i++)
+    {
+        ret[i] = lhs[i] - rhs[i];
+    }
+    return ret;
+}
+
+template <size_t Dim, typename T, typename U>
+vec<Dim, T> operator*(const vec<Dim, T> &lhs, const U &rhs)
+{
+    vec<Dim, T> ret;
+    for(size_t i = 0; i < Dim; i++)
+    {
+        ret[i] = lhs[i] * rhs;
+    }
+    return ret;
+}
+
+template <size_t Dim, typename T, typename U>
+vec<Dim, T> operator/(const vec<Dim, T> &lhs, const U &rhs)
+{
+    vec<Dim, T> ret;
+    for(size_t i = 0; i < Dim; i++)
+    {
+        ret[i] = lhs[i] / rhs;
+    }
+    return ret;
+}
+
+template <size_t Len, size_t Dim, typename T>
+vec<Len, T> embed(const vec<Dim, T> &v, T fill = 1)
+{
+    vec<Len, T> ret;
+    for(size_t i = 0; i < Len; i++)
+    {
+        ret[i] = i < Dim ? v[i] : fill;
+    }
+    return ret;
+}
+
+template <size_t Len, size_t Dim, typename T>
+vec<Len, T> proj(const vec<Dim, T> &v)
+{
+    vec<Len, T> ret;
+    for(size_t i = 0; i < Len; i++)
+    {
+        ret[i] = v[i];
+    }
+    return ret;
+}
+
+template <typename T>
+vec<3, T> cross(const vec<3, T> &v1, const vec<3, T> &v2)
+{
+    vec<3, T> ret;
+    ret[0] = v1.y * v2.z - v1.z * v2.y;
+    ret[1] = v1.z * v2.x - v1.x * v2.z;
+    ret[2] = v1.x * v2.y - v1.y * v2.x;
+    return ret;
+}
+
+template <size_t Dim, typename T>
+std::ostream& operator<<(std::ostream &out, const vec<Dim, T> &v)
+{
+    for(size_t i = 0; i < Dim; i++)
+    {
+        out << v[i] << " ";
+    }
+    return out;
+}
+
+// ---------------------------------------------------------------------------
+
 template <size_t Rows, size_t Cols, typename T>
 struct mat;
 
