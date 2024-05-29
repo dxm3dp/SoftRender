@@ -18,13 +18,13 @@ struct vec
 
     T& operator[](const size_t i)
     {
-        static_assert(i < DIM); // 这里为何可以用静态断言？应该是不可以。
+        assert(i < DIM);
         return data[i];
     }
 
     const T& operator[](const size_t i) const
     {
-        static_assert(i < DIM);
+        assert(i < DIM);
         return data[i];
     }
 
@@ -57,6 +57,11 @@ struct vec<2, T>
         return std::sqrt(x * x + y * y);
     }
 
+    vec<2, T> &normalize()
+    {
+        return *this = (*this) * (1 / norm());
+    }
+
     T x, y;
 };
 
@@ -83,6 +88,11 @@ struct vec<3, T>
     float norm() const
     {
         return std::sqrt(x * x + y * y + z * z);
+    }
+
+    vec<3, T> &normalize()
+    {
+        return *this = (*this) * (1 / norm());
     }
 
     T x, y, z;
