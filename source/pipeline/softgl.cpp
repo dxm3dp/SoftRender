@@ -1,5 +1,6 @@
 #include "softgl.h"
 #include "../geometry/geometry.h"
+#include <limits>
 
 BEGIN_NAMESPACE(SoftRender)
 
@@ -89,6 +90,32 @@ void get_viewport_matrix(int x, int y, int width, int height)
     //viewport_mat[2][3] = 1; // ?
 
     g_viewport_mat = viewport_mat;
+}
+
+void triangle_rasterization(std::vector<vec4f> screen_coords)
+{
+    vec2f bboxmax{-std::numeric_limits<float>::max(), -std::numeric_limits<float>::max()};
+    vec2f bboxmin{std::numeric_limits<float>::max(), std::numeric_limits<float>::max()};
+    for(int i = 0; i < 3; i++)
+    {
+        if (bboxmax[0] < screen_coords[i][0])
+            bboxmax[0] = std::max(0.f, screen_coords[i][0]);
+        if (bboxmax[1] < screen_coords[i][1])
+            bboxmax[1] = std::max(0.f, screen_coords[i][1]);
+
+        if (bboxmin[0] > screen_coords[i][0])
+            bboxmin[0] = std::min(0.f, screen_coords[i][0]);
+        if (bboxmin[1] > screen_coords[i][1])
+            bboxmin[1] = std::min(0.f, screen_coords[i][1]);
+    }
+
+    for(int width = bboxmin[0]; width < bboxmax[0]; width++)
+    {
+        for (int height = bboxmin[1]; height < bboxmax[1]; height++)
+        {
+            // 计算重心坐标
+        }
+    }
 }
 
 END_NAMESPACE(SoftRender)

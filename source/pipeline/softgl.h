@@ -23,6 +23,8 @@ struct IShader
     virtual void frag() = 0;
 };
 
+void triangle_rasterization(std::vector<vec4f> screen_coords);
+
 END_NAMESPACE(SoftRender)
 
 #endif // _SOFT_GL_H_
