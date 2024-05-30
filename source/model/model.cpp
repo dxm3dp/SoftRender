@@ -69,6 +69,42 @@ Model::Model(const char * filename)
     load_texture(filename, "_nm_tangent.tga", normalmap);
 }
 
+int Model::nfaces() const
+{
+    return (int)faces.size();
+}
+
+int Model::nverts() const
+{
+    return (int)vertices.size();
+}
+
+vec3f Model::vert(int idx) const
+{
+    return vertices[idx];
+}
+
+vec3f Model::vert(int iface, int nthvert) const
+{
+    return vertices[faces[iface][nthvert][0]];
+}
+
+vec2f Model::uv(int iface, int nthvert) const
+{
+    return texcoords[faces[iface][nthvert][1]];
+}
+
+vec3f Model::normal(int iface, int nthvert)
+{
+    int idx = faces[iface][nthvert][2];
+    return normals[idx].normalize();
+}
+
+std::vector<vec3i> Model::face(int idx) const
+{
+    return faces[idx];
+}
+
 void Model::load_texture(const char * filename, const char * suffix, TGAImage & tex)
 {
     std::string texfile(filename);

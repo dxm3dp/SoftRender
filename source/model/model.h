@@ -12,6 +12,15 @@ class Model
 public:
     Model(const char * filename);
 
+public:
+    int nfaces() const;
+    int nverts() const;
+    vec3f vert(int idx) const;
+    vec3f vert(int iface, int nthvert) const;
+    vec2f uv(int iface, int nthvert) const;
+    vec3f normal(int iface, int nthvert);
+    std::vector<vec3i> face(int idx) const;
+
 private:
     void load_texture(const char * filename, const char * suffix, TGAImage & image);
 

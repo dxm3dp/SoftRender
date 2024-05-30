@@ -9,6 +9,7 @@ file(GLOB SRC
     ${CMAKE_CURRENT_SOURCE_DIR}/source/geometry/*.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/source/model/*.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/source/pipeline/*.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/source/shader/*.cpp
     )
 
 add_executable(SoftRender ${SRC})

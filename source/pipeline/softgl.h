@@ -3,6 +3,7 @@
 
 #include "../common/cpplang.h"
 #include "../geometry/geometry.h"
+#include "../model/model.h"
 
 BEGIN_NAMESPACE(SoftRender)
 
@@ -15,6 +16,12 @@ void get_model_matrix(vec3f position, vec3f rotation, vec3f scale);
 void get_view_matrix(vec3f eye, vec3f center, vec3f up);
 void get_projection_matrix(float fov, float aspect, float zNear, float zFar);
 void get_viewport_matrix(int x, int y, int width, int height);
+
+struct IShader
+{
+    virtual vec4f vert(Model &model, int iface, int nthvert) = 0;
+    virtual void frag() = 0;
+};
 
 END_NAMESPACE(SoftRender)
 
