@@ -23,7 +23,9 @@ struct IShader
     virtual void frag() = 0;
 };
 
-void triangle_rasterization(std::vector<vec4f> screen_coords);
+void triangle_rasterization(std::vector<vec4f> clipPos);
+
+vec3f barycentric(vec2f A, vec2f B, vec2f C, vec2f P);
 
 END_NAMESPACE(SoftRender)
 

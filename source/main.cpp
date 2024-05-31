@@ -7,6 +7,8 @@
 
 using namespace SoftRender;
 
+// 1.视口变换的应用时机问题。
+
 int main(int argc, char** argv)
 {
     std::cout << "Hello, World!" << std::endl;
@@ -15,14 +17,14 @@ int main(int argc, char** argv)
     SoftRender::Model model(filePath.c_str());
 
     Shader shader;
-    std::vector<vec4f> screen_coords(3);
+    std::vector<vec4f> clip_pos(3);
     for(int i = 0; i < model.nfaces(); i++)
     {
         for(int j = 0; j < 3; j++)
         {
-            screen_coords[j] = shader.vert(model, i, j);
+            clip_pos[j] = shader.vert(model, i, j);
         }
-        triangle_rasterization(screen_coords);
+        triangle_rasterization(clip_pos);
     }
 
     return 0;

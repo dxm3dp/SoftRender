@@ -92,30 +92,60 @@ void get_viewport_matrix(int x, int y, int width, int height)
     g_viewport_mat = viewport_mat;
 }
 
-void triangle_rasterization(std::vector<vec4f> screen_coords)
+void triangle_rasterization(std::vector<vec4f> clipPos)
 {
     vec2f bboxmax{-std::numeric_limits<float>::max(), -std::numeric_limits<float>::max()};
     vec2f bboxmin{std::numeric_limits<float>::max(), std::numeric_limits<float>::max()};
     for(int i = 0; i < 3; i++)
     {
-        if (bboxmax[0] < screen_coords[i][0])
-            bboxmax[0] = std::max(0.f, screen_coords[i][0]);
-        if (bboxmax[1] < screen_coords[i][1])
-            bboxmax[1] = std::max(0.f, screen_coords[i][1]);
+        if (bboxmax[0] < clipPos[i][0])
+            bboxmax[0] = std::max(0.f, clipPos[i][0]);
+        if (bboxmax[1] < clipPos[i][1])
+            bboxmax[1] = std::max(0.f, clipPos[i][1]);
 
-        if (bboxmin[0] > screen_coords[i][0])
-            bboxmin[0] = std::min(0.f, screen_coords[i][0]);
-        if (bboxmin[1] > screen_coords[i][1])
-            bboxmin[1] = std::min(0.f, screen_coords[i][1]);
+        if (bboxmin[0] > clipPos[i][0])
+            bboxmin[0] = std::min(0.f, clipPos[i][0]);
+        if (bboxmin[1] > clipPos[i][1])
+            bboxmin[1] = std::min(0.f, clipPos[i][1]);
     }
 
-    for(int width = bboxmin[0]; width < bboxmax[0]; width++)
+    vec2f p;
+    for(p.x = bboxmin[0]; p.x < bboxmax[0]; p.x++)
     {
-        for (int height = bboxmin[1]; height < bboxmax[1]; height++)
+        for (p.y = bboxmin[1]; p.y < bboxmax[1]; p.y++)
         {
-            // 计算重心坐标
+            vec3f bc = barycentric(
+                proj<2>(clipPos[0]/clipPos[0][3]),
+                proj<2>(clipPos[1]/clipPos[1][3]),
+                proj<2>(clipPos[2]/clipPos[2][3]), p);
+
+            float z = clipPos[0][2] * bc[0] + clipPos[1][2] * bc[1] + clipPos[2][2] * bc[2];
+            float w = clipPos[0][3] * bc[0] + clipPos[1][3] * bc[1] + clipPos[2][3] * bc[2];
+            float frag_depth = z / w;
+
+            if (bc.x < 0 || bc.y < 0 || bc.z < 0)
+                continue;
+
+            // TODO 加入深度测试。
         }
     }
+}
+
+vec3f barycentric(vec2f A, vec2f B, vec2f C, vec2f P)
+{
+    vec3f s[2];
+    for(int i = 0; i < 2; i++)
+    {
+        s[i][0] = C[i] - A[i];
+        s[i][1] = B[i] - A[i];
+        s[i][2] = A[i] - P[i];
+    }
+    vec3f u = cross(s[0], s[1]);
+    // if u[2] is 0, than triangle ABC is degenerate
+    if (std::abs(u[2] > 1e-2))
+        return vec3f(1.f - (u.x + u.y) / u.z, u.y / u.z, u.x / u.z);
+
+    return vec3f(-1.f, 1.f, 1.f);
 }
 
 END_NAMESPACE(SoftRender)
