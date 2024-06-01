@@ -257,4 +257,122 @@ int TGAImage::get_height() const
     return height;
 }
 
+bool TGAImage::write_tga_file(const char *filename, bool rle)
+{
+    unsigned char developer_area_ref[4] = {0, 0, 0, 0};
+    unsigned char extension_area_ref[4] = {0, 0, 0, 0};
+    unsigned char footer[18] = {'T', 'R', 'U', 'E', 'V', 'I', 'S', 'I', 'O', 'N', '-', 'X', 'F', 'I', 'L', 'E', '.', '\n'};
+    std::ofstream out(filename, std::ios::binary);
+    if (!out.is_open())
+    {
+        out.close();
+        LOGE("open file failed."); // 日志信息
+        return false;
+    }
+    TGA_Header header;
+    memset((void *)&header, 0, sizeof(header));
+    header.bitsperpixel = bytespp << 3;
+    header.width = width;
+    header.height = height;
+    header.datatypecode = (bytespp == GRAYSCALE ? (rle ? 11 : 3) : (rle ? 10 : 2));
+    header.imagedescriptor = 0x20; // top-left origin
+    out.write((char *)&header, sizeof(header));
+    if (!out.good())
+    {
+        out.close();
+        LOGE("Failed to write file %s", filename);
+        return false;
+    }
+    if (!rle)
+    {
+        out.write((char *)data, width * height * bytespp);
+        if (!out.good())
+        {
+            out.close();
+            LOGE("Failed to unload raw data"); // ?
+            return false;
+        }
+    }
+    else
+    {
+        if (!unload_rle_data(out))
+        {
+            out.close();
+            LOGE("Failed to unload rle data");
+            return false;
+        }
+    }
+    out.write((char *)developer_area_ref, sizeof(developer_area_ref));
+    if (!out.good()) {
+        out.close();
+        LOGE("Can't dump the tga file\n");
+        return false;
+    }
+    out.write((char *)extension_area_ref, sizeof(extension_area_ref));
+    if (!out.good()) {
+        out.close();
+        LOGE("Can't dump the tga file\n");
+        return false;
+    }
+    out.write((char *)footer, sizeof(footer));
+    if (!out.good()) {
+        out.close();
+        LOGE("Can't dump the tga file\n");
+        return false;
+    }
+    out.close();
+    return true;
+}
+
+bool TGAImage::unload_rle_data(std::ofstream& out)
+{
+    const unsigned char max_chunk_length = 128;
+    unsigned long npixels = width * height;
+    unsigned long curpix = 0;
+    while (curpix < npixels)
+    {
+        unsigned long chunk_start = curpix * bytespp;
+        unsigned long curbyte = curpix * bytespp;
+        unsigned char run_length = 1;
+        bool raw = true;
+        while (curpix + run_length < npixels && run_length < max_chunk_length)
+        {
+            bool succ_eq = true;
+            for(int t = 0; succ_eq && t < bytespp; t++)
+            {
+                succ_eq = (data[curbyte + t] == data[curbyte + t + bytespp]);
+            }
+            curbyte++;
+            if (1 == run_length)
+            {
+                raw = !succ_eq;
+            }
+            if (raw && succ_eq)
+            {
+                run_length--;
+                break;
+            }
+            if(!raw && !succ_eq)
+            {
+                break;
+            }
+            run_length++;
+        }
+        curpix += run_length;
+        out.put(raw ? run_length - 1 : run_length + 127);
+        if (!out.good())
+        {
+            LOGE("Can't dump the tga file\n");
+            return false;
+        }
+        out.write((char *)(data + chunk_start), raw ? run_length * bytespp : bytespp);
+        if (!out.good())
+        {
+            LOGE("Can't dump the tga file\n");
+            return false;
+        }
+    }
+    return true;
+}
+
 END_NAMESPACE(SoftRender)

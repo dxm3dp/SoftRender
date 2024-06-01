@@ -36,5 +36,8 @@ int main(int argc, char** argv)
         triangle_rasterization(clip_pos, framebuffer, zbuffer, shader);
     }
 
+    // TODO 实现TGAImage的写入功能
+    framebuffer.write_tga_file("framebuffer.tga", false);
+
     return 0;
 }

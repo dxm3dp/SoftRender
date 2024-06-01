@@ -9,7 +9,7 @@ BEGIN_NAMESPACE(SoftRender)
 struct Shader : public IShader
 {
     virtual vec4f vert(Model& model, int iface, int nthvert);
-    virtual void frag(vec3f bc);
+    virtual void frag(vec3f bc, TGAColor &color);
 };
 
 END_NAMESPACE(SoftRender)

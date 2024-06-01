@@ -76,6 +76,7 @@ void get_projection_matrix(float fov, float aspect, float zNear, float zFar)
     projection_mat[2][2] = -(zNear + zFar) / (zFar - zNear);
     projection_mat[2][3] = -2.f * zNear * zFar / (zFar - zNear);
     projection_mat[3][2] = -1.f;
+    projection_mat[3][3] = 0.f;
 
     g_projection_mat = projection_mat;
 }
@@ -128,7 +129,10 @@ void triangle_rasterization(std::vector<vec4f> clipPos, TGAImage &framebuffer, f
             if (zbuffer[p.y * framebuffer.get_width() + p.x] > frag_depth)
                 continue;
 
-            shader.frag(bc);
+            TGAColor color;
+            shader.frag(bc, color);
+            zbuffer[p.y * framebuffer.get_width() + p.x] = frag_depth;
+            framebuffer.set(p.x, p.y, color);
         }
     }
 }
