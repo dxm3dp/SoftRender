@@ -89,6 +89,8 @@ public:
     bool flip_horizontally();
     TGAColor get(int x, int y) const;
     bool set(int x, int y, const TGAColor & c);
+    int get_width() const;
+    int get_height() const;
 
 private:
     bool load_rle_data(std::ifstream& in);

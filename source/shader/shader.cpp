@@ -8,4 +8,9 @@ vec4f Shader::vert(Model &model, int iface, int nthvert)
     return gl_vertex;
 }
 
+void Shader::frag(vec3f bc)
+{
+    // TODO 实现片元着色器
+}
+
 END_NAMESPACE(SoftRender)

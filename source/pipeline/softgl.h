@@ -20,10 +20,10 @@ void get_viewport_matrix(int x, int y, int width, int height);
 struct IShader
 {
     virtual vec4f vert(Model &model, int iface, int nthvert) = 0;
-    virtual void frag() = 0;
+    virtual void frag(vec3f bc) = 0;
 };
 
-void triangle_rasterization(std::vector<vec4f> clipPos);
+void triangle_rasterization(std::vector<vec4f> clipPos, TGAImage &framebuffer, float *zbuffer, IShader &shader);
 
 vec3f barycentric(vec2f A, vec2f B, vec2f C, vec2f P);
 

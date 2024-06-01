@@ -92,7 +92,7 @@ void get_viewport_matrix(int x, int y, int width, int height)
     g_viewport_mat = viewport_mat;
 }
 
-void triangle_rasterization(std::vector<vec4f> clipPos)
+void triangle_rasterization(std::vector<vec4f> clipPos, TGAImage &framebuffer, float *zbuffer, IShader &shader)
 {
     vec2f bboxmax{-std::numeric_limits<float>::max(), -std::numeric_limits<float>::max()};
     vec2f bboxmin{std::numeric_limits<float>::max(), std::numeric_limits<float>::max()};
@@ -109,7 +109,7 @@ void triangle_rasterization(std::vector<vec4f> clipPos)
             bboxmin[1] = std::min(0.f, clipPos[i][1]);
     }
 
-    vec2f p;
+    vec2i p;
     for(p.x = bboxmin[0]; p.x < bboxmax[0]; p.x++)
     {
         for (p.y = bboxmin[1]; p.y < bboxmax[1]; p.y++)
@@ -125,8 +125,10 @@ void triangle_rasterization(std::vector<vec4f> clipPos)
 
             if (bc.x < 0 || bc.y < 0 || bc.z < 0)
                 continue;
+            if (zbuffer[p.y * framebuffer.get_width() + p.x] > frag_depth)
+                continue;
 
-            // TODO 加入深度测试。
+            shader.frag(bc);
         }
     }
 }

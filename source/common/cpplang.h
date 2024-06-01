@@ -15,6 +15,7 @@
 #include <algorithm>
 #include <fstream>
 #include <sstream>
+#include <limits>
 
 // must be C++11 or later
 #if __cplusplus < 201103

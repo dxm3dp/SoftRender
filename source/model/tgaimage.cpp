@@ -247,4 +247,14 @@ bool TGAImage::load_rle_data(std::ifstream & in)
     return true;
 }
 
+int TGAImage::get_width() const
+{
+    return width;
+}
+
+int TGAImage::get_height() const
+{
+    return height;
+}
+
 END_NAMESPACE(SoftRender)
