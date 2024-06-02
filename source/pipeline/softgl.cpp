@@ -60,6 +60,7 @@ void get_view_matrix(vec3f eye, vec3f center, vec3f up)
         rot[0][i] = x[i];
         rot[1][i] = y[i];
         rot[2][i] = z[i];
+        //rot[i][3] = -center[i];
         trans[i][3] = -center[i];
     }
 
@@ -88,7 +89,8 @@ void get_viewport_matrix(int x, int y, int width, int height)
     viewport_mat[1][1] = height / 2;
     viewport_mat[0][3] = x + width / 2;
     viewport_mat[1][3] = y + height / 2;
-    //viewport_mat[2][3] = 1; // ?
+    viewport_mat[2][3] = 1000.f; // ?
+    viewport_mat[2][2] = 1000.f; // ?
 
     g_viewport_mat = viewport_mat;
 }
@@ -122,7 +124,7 @@ void triangle_rasterization(std::vector<vec4f> clipPos, TGAImage &framebuffer, f
 
             float z = clipPos[0][2] * bc[0] + clipPos[1][2] * bc[1] + clipPos[2][2] * bc[2];
             float w = clipPos[0][3] * bc[0] + clipPos[1][3] * bc[1] + clipPos[2][3] * bc[2];
-            float frag_depth = z / w;
+            int frag_depth = z / w;
 
             if (bc.x < 0 || bc.y < 0 || bc.z < 0)
                 continue;

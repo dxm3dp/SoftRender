@@ -229,7 +229,7 @@ public:
         {
             for (size_t j = 0; j < Cols; j++)
             {
-                ret[i][j] == (i == j ? 1 : 0);
+                ret[i][j] = (i == j ? 1 : 0);
             }
         }
         return ret;
