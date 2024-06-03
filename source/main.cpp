@@ -23,6 +23,8 @@ int main(int argc, char** argv)
     std::string filePath = "D:/Work/GitHub/dxm3dp/SoftRender/models/triangle/sj.obj";
     SoftRender::Model model(filePath.c_str());
 
+    //TODO 处理透视投影问题。
+
     get_model_matrix(vec3f(0, 0, 0), vec3f(0, 0, 0), vec3f(1, 1, 1));
     get_view_matrix(eye, center, up);
     //get_projection_matrix(60.f, 1.f, 0.1f, 500.f);
