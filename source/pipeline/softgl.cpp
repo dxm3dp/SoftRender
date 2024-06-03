@@ -60,11 +60,10 @@ void get_view_matrix(vec3f eye, vec3f center, vec3f up)
         rot[0][i] = x[i];
         rot[1][i] = y[i];
         rot[2][i] = z[i];
-        //rot[i][3] = -center[i];
         trans[i][3] = -center[i];
     }
 
-    g_view_mat = rot * trans;
+    g_view_mat = trans * rot; // First perform the linear transformation, then the translate transformation.
 }
 
 void get_projection_matrix(float fov, float aspect, float zNear, float zFar)
@@ -78,6 +77,14 @@ void get_projection_matrix(float fov, float aspect, float zNear, float zFar)
     projection_mat[2][3] = -2.f * zNear * zFar / (zFar - zNear);
     projection_mat[3][2] = -1.f;
     projection_mat[3][3] = 0.f;
+
+    g_projection_mat = projection_mat;
+}
+
+void get_projection_matrix(float coeff)
+{
+    mat4x4 projection_mat = mat4x4::identity();
+    projection_mat[3][2] = coeff;
 
     g_projection_mat = projection_mat;
 }
@@ -97,19 +104,15 @@ void get_viewport_matrix(int x, int y, int width, int height)
 
 void triangle_rasterization(std::vector<vec4f> clipPos, TGAImage &framebuffer, float *zbuffer, IShader &shader)
 {
-    vec2f bboxmax{-std::numeric_limits<float>::max(), -std::numeric_limits<float>::max()};
     vec2f bboxmin{std::numeric_limits<float>::max(), std::numeric_limits<float>::max()};
+    vec2f bboxmax{-std::numeric_limits<float>::max(), -std::numeric_limits<float>::max()};
     for(int i = 0; i < 3; i++)
     {
-        if (bboxmax[0] < clipPos[i][0])
-            bboxmax[0] = std::max(0.f, clipPos[i][0]);
-        if (bboxmax[1] < clipPos[i][1])
-            bboxmax[1] = std::max(0.f, clipPos[i][1]);
-
-        if (bboxmin[0] > clipPos[i][0])
-            bboxmin[0] = std::min(0.f, clipPos[i][0]);
-        if (bboxmin[1] > clipPos[i][1])
-            bboxmin[1] = std::min(0.f, clipPos[i][1]);
+        for(int j = 0; j < 2; j++)
+        {
+            bboxmin[j] = std::max(0.f, std::min(bboxmin[j], clipPos[i][j]/clipPos[i][3]));
+            bboxmax[j] = std::max(0.f, std::max(bboxmax[j], clipPos[i][j]/clipPos[i][3]));
+        }
     }
 
     vec2i p;
@@ -150,7 +153,7 @@ vec3f barycentric(vec2f A, vec2f B, vec2f C, vec2f P)
     }
     vec3f u = cross(s[0], s[1]);
     // if u[2] is 0, than triangle ABC is degenerate
-    if (std::abs(u[2] > 1e-2))
+    if (std::abs(u[2]) > 1e-2)
         return vec3f(1.f - (u.x + u.y) / u.z, u.y / u.z, u.x / u.z);
 
     return vec3f(-1.f, 1.f, 1.f);

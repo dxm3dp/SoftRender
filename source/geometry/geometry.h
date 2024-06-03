@@ -103,7 +103,7 @@ struct vec<3, T>
 template <size_t Dim, typename T>
 T operator*(const vec<Dim, T> &lhs, const vec<Dim, T> &rhs)
 {
-    T ret;
+    T ret = T();
     for(size_t i = 0; i < Dim; i++)
     {
         ret += lhs[i] * rhs[i];

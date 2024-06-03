@@ -15,6 +15,7 @@ extern mat4x4 g_viewport_mat;
 void get_model_matrix(vec3f position, vec3f rotation, vec3f scale);
 void get_view_matrix(vec3f eye, vec3f center, vec3f up);
 void get_projection_matrix(float fov, float aspect, float zNear, float zFar);
+void get_projection_matrix(float coeff = 0.f);
 void get_viewport_matrix(int x, int y, int width, int height);
 
 struct IShader
