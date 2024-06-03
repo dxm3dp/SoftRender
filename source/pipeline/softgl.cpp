@@ -69,7 +69,7 @@ void get_view_matrix(vec3f eye, vec3f center, vec3f up)
 void get_projection_matrix(float fov, float aspect, float zNear, float zFar)
 {
     fov = fov * M_PI / 180.f;
-    float fax = 1 / std::tan( fov / 2.f);
+    float fax = 1 / std::tan( fov * 0.5f);
     mat4x4 projection_mat = mat4x4::identity();
     projection_mat[0][0] = fax / aspect;
     projection_mat[1][1] = fax;
