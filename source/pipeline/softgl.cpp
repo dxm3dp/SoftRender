@@ -91,18 +91,19 @@ void get_projection_matrix(float coeff)
 
 void get_viewport_matrix(int x, int y, int width, int height)
 {
+    // NDC -> Screen
     mat4x4 viewport_mat = mat4x4::identity();
-    viewport_mat[0][0] = width / 2;
-    viewport_mat[1][1] = height / 2;
-    viewport_mat[0][3] = x + width / 2;
-    viewport_mat[1][3] = y + height / 2;
-    viewport_mat[2][3] = 1000.f; // ?
-    viewport_mat[2][2] = 1000.f; // ?
+    viewport_mat[0][0] = width / 2;     // width scale
+    viewport_mat[1][1] = height / 2;    // height scale
+    viewport_mat[2][2] = depth / 2;     // depth scale
+    viewport_mat[0][3] = x + width / 2; // min x
+    viewport_mat[1][3] = y + height / 2;// min y
+    viewport_mat[2][3] = depth / 2;     // min z
 
     g_viewport_mat = viewport_mat;
 }
 
-void triangle_rasterization(std::vector<vec4f> clipPos, TGAImage &framebuffer, float *zbuffer, IShader &shader)
+void triangle_rasterization(std::vector<vec4f> screenPos, TGAImage &framebuffer, float *zbuffer, IShader &shader)
 {
     vec2f bboxmin{std::numeric_limits<float>::max(), std::numeric_limits<float>::max()};
     vec2f bboxmax{-std::numeric_limits<float>::max(), -std::numeric_limits<float>::max()};
@@ -110,8 +111,8 @@ void triangle_rasterization(std::vector<vec4f> clipPos, TGAImage &framebuffer, f
     {
         for(int j = 0; j < 2; j++)
         {
-            bboxmin[j] = std::max(0.f, std::min(bboxmin[j], clipPos[i][j]/clipPos[i][3]));
-            bboxmax[j] = std::max(0.f, std::max(bboxmax[j], clipPos[i][j]/clipPos[i][3]));
+            bboxmin[j] = std::max(0.f, std::min(bboxmin[j], screenPos[i][j]/screenPos[i][3]));
+            bboxmax[j] = std::max(0.f, std::max(bboxmax[j], screenPos[i][j]/screenPos[i][3]));
         }
     }
 
@@ -121,12 +122,17 @@ void triangle_rasterization(std::vector<vec4f> clipPos, TGAImage &framebuffer, f
         for (p.y = bboxmin[1]; p.y < bboxmax[1]; p.y++)
         {
             vec3f bc = barycentric(
-                proj<2>(clipPos[0]/clipPos[0][3]),
-                proj<2>(clipPos[1]/clipPos[1][3]),
-                proj<2>(clipPos[2]/clipPos[2][3]), p);
+                proj<2>(screenPos[0]/screenPos[0][3]),
+                proj<2>(screenPos[1]/screenPos[1][3]),
+                proj<2>(screenPos[2]/screenPos[2][3]), p);
+            //vec3f bc = barycentricV2(
+                //proj<2>(screenPos[0]/screenPos[0][3]),
+                //proj<2>(screenPos[1]/screenPos[1][3]),
+                //proj<2>(screenPos[2]/screenPos[2][3]), p);
 
-            float z = clipPos[0][2] * bc[0] + clipPos[1][2] * bc[1] + clipPos[2][2] * bc[2];
-            float w = clipPos[0][3] * bc[0] + clipPos[1][3] * bc[1] + clipPos[2][3] * bc[2];
+            // correct barycentric coordnates
+            float z = screenPos[0][2] * bc[0] + screenPos[1][2] * bc[1] + screenPos[2][2] * bc[2];
+            float w = screenPos[0][3] * bc[0] + screenPos[1][3] * bc[1] + screenPos[2][3] * bc[2];
             int frag_depth = z / w;
 
             if (bc.x < 0 || bc.y < 0 || bc.z < 0)
@@ -157,6 +163,16 @@ vec3f barycentric(vec2f A, vec2f B, vec2f C, vec2f P)
         return vec3f(1.f - (u.x + u.y) / u.z, u.y / u.z, u.x / u.z);
 
     return vec3f(-1.f, 1.f, 1.f);
+}
+
+vec3f barycentricV2(vec2f A, vec2f B, vec2f C, vec2f P)
+{
+    vec3f ret;
+    ret.x = (P.x * (B.y - C.y) + (C.x - B.x) * P.y + B.x * C.y - C.x * B.y) / (A.x * (B.y - C.y) + (C.x - B.x) * A.y + B.x * C.y - C.x * B.y) ;
+    ret.y = (P.x * (C.y - A.y) + (A.x - C.x) * P.y + C.x * A.y - A.x * C.y) / (B.x * (C.y - A.y) + (A.x - C.x) * B.y + C.x * A.y - A.x * C.y) ;
+    ret.z = (P.x * (A.y - B.y) + (B.x - A.x) * P.y + A.x * B.y - B.x * A.y) / (C.x * (A.y - B.y) + (B.x - A.x) * C.y + A.x * B.y - B.x * A.y) ;
+
+    return ret;
 }
 
 END_NAMESPACE(SoftRender)

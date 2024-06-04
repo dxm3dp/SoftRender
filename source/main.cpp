@@ -7,12 +7,6 @@
 
 using namespace SoftRender;
 
-// 1.视口变换的应用时机问题。
-// 2.视口变换的Z坐标计算问题。
-// 3.重心坐标的多种算法测试。
-
-// TODO 重心坐标多种算法测试。
-
 const int width = 800;
 const int height = 800;
 
@@ -40,14 +34,14 @@ int main(int argc, char** argv)
         zbuffer[i] = -std::numeric_limits<float>::max();
     }
     Shader shader;
-    std::vector<vec4f> clip_pos(3);
+    std::vector<vec4f> screen_pos(3);
     for(int i = 0; i < model.nfaces(); i++)
     {
         for(int j = 0; j < 3; j++)
         {
-            clip_pos[j] = shader.vert(model, i, j);
+            screen_pos[j] = shader.vert(model, i, j);
         }
-        triangle_rasterization(clip_pos, framebuffer, zbuffer, shader);
+        triangle_rasterization(screen_pos, framebuffer, zbuffer, shader);
     }
     framebuffer.flip_vertically();
     framebuffer.write_tga_file("framebuffer.tga", false);
