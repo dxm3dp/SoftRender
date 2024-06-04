@@ -8,24 +8,28 @@
 using namespace SoftRender;
 
 // 1.视口变换的应用时机问题。
+// 2.视口变换的Z坐标计算问题。
+// 3.重心坐标的多种算法测试。
+
+// TODO 重心坐标多种算法测试。
 
 const int width = 800;
 const int height = 800;
 
-vec3f eye(0, 1, 4);
+vec3f eye(0, 0, 4);
 vec3f center(0, 0, 0);
 vec3f up(0, 1, 0);
 
 int main(int argc, char** argv)
 {
-    //std::string filePath = "F:/Work/GitHub/dxm3dp/SoftRender/models/diablo3/diablo3_pose.obj";
-    std::string filePath = "F:/Work/GitHub/dxm3dp/SoftRender/models/triangle/sj.obj";
+    std::string filePath = "D:/Work/GitHub/dxm3dp/SoftRender/models/diablo3/diablo3_pose.obj";
+    //std::string filePath = "D:/Work/GitHub/dxm3dp/SoftRender/models/triangle/sj.obj";
+    //std::string filePath = "D:/Work/GitHub/dxm3dp/SoftRender/models/brickwall/brickwall.obj";
     SoftRender::Model model(filePath.c_str());
 
-    get_model_matrix(vec3f(0, 0, -1), vec3f(90, 0, 0), vec3f(1, 1, 1));
+    get_model_matrix(vec3f(0, 0, -2), vec3f(0, 0, 0), vec3f(1, 1, 1));
     get_view_matrix(eye, center, up);
     get_projection_matrix(60.f, 1.f, 0.1f, 100.f);
-    //get_projection_matrix(-1.f / (eye - center).norm());
     get_viewport_matrix(width / 8, height / 8, width * 3 / 4, height * 3 / 4);
 
     TGAImage framebuffer{width, height, TGAImage::RGB};
