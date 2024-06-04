@@ -105,6 +105,12 @@ std::vector<vec3i> Model::face(int idx) const
     return faces[idx];
 }
 
+TGAColor Model::diffuse(vec2f uv) const
+{
+    vec2i uvi{(int)(uv[0] * diffusemap.get_width()), (int)(uv[1] * diffusemap.get_height())};
+    return diffusemap.get(uvi.x, uvi.y);
+}
+
 void Model::load_texture(const char * filename, const char * suffix, TGAImage & tex)
 {
     std::string texfile(filename);

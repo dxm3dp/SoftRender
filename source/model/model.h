@@ -20,6 +20,7 @@ public:
     vec2f uv(int iface, int nthvert) const;
     vec3f normal(int iface, int nthvert);
     std::vector<vec3i> face(int idx) const;
+    TGAColor diffuse(vec2f uv) const;
 
 private:
     void load_texture(const char * filename, const char * suffix, TGAImage & image);

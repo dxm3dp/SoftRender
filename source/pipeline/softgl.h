@@ -22,11 +22,11 @@ void get_viewport_matrix(int x, int y, int width, int height);
 
 struct IShader
 {
-    virtual vec4f vert(Model &model, int iface, int nthvert) = 0;
-    virtual void frag(vec3f bc, TGAColor &color) = 0;
+    virtual vec4f vert(Model *model, int iface, int nthvert) = 0;
+    virtual void frag(Model *model, vec3f bc, TGAColor &color) = 0;
 };
 
-void triangle_rasterization(std::vector<vec4f> screenPos, TGAImage &framebuffer, float *zbuffer, IShader &shader);
+void triangle_rasterization(Model *model, std::vector<vec4f> screenPos, TGAImage &framebuffer, float *zbuffer, IShader &shader);
 
 vec3f barycentric(vec2f A, vec2f B, vec2f C, vec2f P);
 vec3f barycentricV2(vec2f A, vec2f B, vec2f C, vec2f P);

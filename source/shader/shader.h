@@ -8,8 +8,10 @@ BEGIN_NAMESPACE(SoftRender)
 
 struct Shader : public IShader
 {
-    virtual vec4f vert(Model& model, int iface, int nthvert);
-    virtual void frag(vec3f bc, TGAColor &color);
+    virtual vec4f vert(Model *model, int iface, int nthvert);
+    virtual void frag(Model *model, vec3f bc, TGAColor &color);
+
+    mat<2, 3, float> varying_uv; // triangle uv coordinate, written by vertex shader, read by fragment shader.
 };
 
 END_NAMESPACE(SoftRender)

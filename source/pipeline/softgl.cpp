@@ -103,7 +103,7 @@ void get_viewport_matrix(int x, int y, int width, int height)
     g_viewport_mat = viewport_mat;
 }
 
-void triangle_rasterization(std::vector<vec4f> screenPos, TGAImage &framebuffer, float *zbuffer, IShader &shader)
+void triangle_rasterization(Model *model, std::vector<vec4f> screenPos, TGAImage &framebuffer, float *zbuffer, IShader &shader)
 {
     vec2f bboxmin{std::numeric_limits<float>::max(), std::numeric_limits<float>::max()};
     vec2f bboxmax{-std::numeric_limits<float>::max(), -std::numeric_limits<float>::max()};
@@ -141,7 +141,7 @@ void triangle_rasterization(std::vector<vec4f> screenPos, TGAImage &framebuffer,
                 continue;
 
             TGAColor color;
-            shader.frag(bc, color);
+            shader.frag(model, bc, color);
             zbuffer[p.y * framebuffer.get_width() + p.x] = frag_depth;
             framebuffer.set(p.x, p.y, color);
         }
