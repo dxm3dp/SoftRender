@@ -18,7 +18,7 @@ Model *model = nullptr;
 
 int main(int argc, char** argv)
 {
-    std::string filePath = "D:/Work/GitHub/dxm3dp/SoftRender/models/diablo3/diablo3_pose.obj";
+    std::string filePath = "F:/Work/GitHub/dxm3dp/SoftRender/models/diablo3/diablo3_pose.obj";
     //std::string filePath = "D:/Work/GitHub/dxm3dp/SoftRender/models/triangle/sj.obj";
     //std::string filePath = "D:/Work/GitHub/dxm3dp/SoftRender/models/brickwall/brickwall.obj";
     model = new Model(filePath.c_str());
@@ -35,7 +35,7 @@ int main(int argc, char** argv)
     {
         zbuffer[i] = -std::numeric_limits<float>::max();
     }
-    Shader shader;
+    Shader shader{g_model_mat, g_model_mat};
     std::vector<vec4f> screen_pos(3);
     for(int i = 0; i < model->nfaces(); i++)
     {

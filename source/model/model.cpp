@@ -111,6 +111,18 @@ TGAColor Model::diffuse(vec2f uv) const
     return diffusemap.get(uvi.x, uvi.y);
 }
 
+vec3f Model::normal(vec2f uv) const
+{
+    vec2i uvi{(int)(uv[0] * normalmap.get_width()), (int)(uv[1] * normalmap.get_height())};
+    TGAColor color = normalmap.get(uvi.x, uvi.y);
+    vec3f ret;
+    for(int i = 0; i < 3; i++)
+    {
+        ret[i] = color[i] / 255.f * 2.f - 1.f;
+    }
+    return ret;
+}
+
 void Model::load_texture(const char * filename, const char * suffix, TGAImage & tex)
 {
     std::string texfile(filename);

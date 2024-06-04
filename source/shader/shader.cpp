@@ -11,14 +11,15 @@ vec4f Shader::vert(Model *model, int iface, int nthvert)
 
 void Shader::frag(Model *model, vec3f bc, TGAColor &color)
 {
-    // 待用纯色完成图像绘制后，再回来实现这部分。
     // 1. 通过重心坐标计算当前片元的uv坐标，用于纹理采样。
     // 2. 对diffuse、nomral贴图进行采样。
     // 3. 使用光照模型，计算光照。
 
-    // TODO 纹理映射
     vec2f uv = varying_uv * bc;
-    color = model->diffuse(uv);
+    TGAColor diffuse = model->diffuse(uv);
+    vec3f n = proj<3>(uniform_MIT * embed<4>(model->normal(uv))).normalize();
+
+    color = diffuse;
 }
 
 END_NAMESPACE(SoftRender)
