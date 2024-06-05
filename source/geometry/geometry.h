@@ -207,12 +207,21 @@ struct determinant
 {
     static T det(const mat<Dim, Dim, T> &src)
     {
-        T ret;
+        T ret = 0;
         for(size_t i = 0; i < Dim; i++)
         {
             ret += src[0][i] * src.cofactor(0, i);
         }
         return ret;
+    }
+};
+
+template <typename T>
+struct determinant<1, T>
+{
+    static T det(const mat<1, 1, T> &src)
+    {
+        return src[0][0];
     }
 };
 
@@ -303,7 +312,7 @@ public:
         return ret;
     }
 
-    mat<Rows, Cols, T> invert_transpose() const
+    mat<Rows, Cols, T> invert_transpose()
     {
         mat<Rows, Cols, T> ret = adjusgate();
         T det = ret[0] * rows[0];

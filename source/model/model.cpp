@@ -132,7 +132,7 @@ void Model::load_texture(const char * filename, const char * suffix, TGAImage & 
         texfile = texfile.substr(0, dot) + std::string(suffix);
         bool ret = tex.read_tga_file(texfile.c_str());
         LOGI("texture file: %s, %s", texfile.c_str(), ret ? "loaded" : "failed");
-        //tex.flip_vertically(); // 为什么要做这个操作？
+        tex.flip_vertically(); // 为什么要做这个操作？
     }
 }
 

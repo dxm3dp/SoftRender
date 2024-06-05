@@ -107,19 +107,20 @@ void triangle_rasterization(Model *model, std::vector<vec4f> screenPos, TGAImage
 {
     vec2f bboxmin{std::numeric_limits<float>::max(), std::numeric_limits<float>::max()};
     vec2f bboxmax{-std::numeric_limits<float>::max(), -std::numeric_limits<float>::max()};
+    vec2f clamp{(float)(framebuffer.get_width() - 1), (float)(framebuffer.get_height() - 1)};
     for(int i = 0; i < 3; i++)
     {
         for(int j = 0; j < 2; j++)
         {
             bboxmin[j] = std::max(0.f, std::min(bboxmin[j], screenPos[i][j]/screenPos[i][3]));
-            bboxmax[j] = std::max(0.f, std::max(bboxmax[j], screenPos[i][j]/screenPos[i][3]));
+            bboxmax[j] = std::min(clamp[j], std::max(bboxmax[j], screenPos[i][j]/screenPos[i][3]));
         }
     }
 
     vec2i p;
-    for(p.x = bboxmin[0]; p.x < bboxmax[0]; p.x++)
+    for(p.x = bboxmin.x; p.x <= bboxmax.x; p.x++)
     {
-        for (p.y = bboxmin[1]; p.y < bboxmax[1]; p.y++)
+        for (p.y = bboxmin.y; p.y <= bboxmax.y; p.y++)
         {
             vec3f bc = barycentric(
                 proj<2>(screenPos[0]/screenPos[0][3]),
@@ -137,12 +138,12 @@ void triangle_rasterization(Model *model, std::vector<vec4f> screenPos, TGAImage
 
             if (bc.x < 0 || bc.y < 0 || bc.z < 0)
                 continue;
-            if (zbuffer[p.y * framebuffer.get_width() + p.x] > frag_depth)
+            if (zbuffer[p.x + p.y * framebuffer.get_width()] > frag_depth)
                 continue;
 
             TGAColor color;
             shader.frag(model, bc, color);
-            zbuffer[p.y * framebuffer.get_width() + p.x] = frag_depth;
+            zbuffer[p.x + p.y * framebuffer.get_width()] = frag_depth;
             framebuffer.set(p.x, p.y, color);
         }
     }

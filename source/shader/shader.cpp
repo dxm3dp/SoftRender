@@ -18,8 +18,19 @@ void Shader::frag(Model *model, vec3f bc, TGAColor &color)
     vec2f uv = varying_uv * bc;
     TGAColor diffuse = model->diffuse(uv);
     vec3f n = proj<3>(uniform_MIT * embed<4>(model->normal(uv))).normalize();
-
+    vec3f l(1, 1, 0);
+    l = proj<3>(uniform_M * embed<4>(l)).normalize();
+    vec3f r = (n * ( n * l * 2.f) - l).normalize();
+    float diff = std::max(0.f, n * l);
+    for(int i = 0; i < 3; i++)
+    {
+        diffuse[i] = std::min<float>(20 + diffuse[i] * diff, 255);
+    }
     color = diffuse;
+    //color[0] = 230;
+    //color[1] = 30;
+    //color[2] = 30;
+    //color[3] = 30;
 }
 
 END_NAMESPACE(SoftRender)
