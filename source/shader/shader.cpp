@@ -27,10 +27,6 @@ void Shader::frag(Model *model, vec3f bc, TGAColor &color)
         diffuse[i] = std::min<float>(20 + diffuse[i] * diff, 255);
     }
     color = diffuse;
-    //color[0] = 230;
-    //color[1] = 30;
-    //color[2] = 30;
-    //color[3] = 30;
 }
 
 END_NAMESPACE(SoftRender)

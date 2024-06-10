@@ -66,15 +66,18 @@ void get_view_matrix(vec3f eye, vec3f center, vec3f up)
     g_view_mat = trans * rot; // First perform the linear transformation, then the translate transformation.
 }
 
-void get_projection_matrix(float fov, float aspect, float zNear, float zFar)
+void get_projection_matrix(float fov, float aspect, float n, float f)
 {
+    // perspective projection transform
+    // canonical view volumn range : x[-1, 1] y[-1, 1] z[-1, 1]
+
     fov = fov * M_PI / 180.f;
     float fax = 1 / std::tan( fov * 0.5f);
     mat4x4 projection_mat = mat4x4::identity();
     projection_mat[0][0] = fax / aspect;
     projection_mat[1][1] = fax;
-    projection_mat[2][2] = -(zNear + zFar) / (zFar - zNear);
-    projection_mat[2][3] = -2.f * zNear * zFar / (zFar - zNear);
+    projection_mat[2][2] = (f + n) / (f - n);
+    projection_mat[2][3] = 2 * n * f / (f - n);
     projection_mat[3][2] = -1.f;
     projection_mat[3][3] = 0.f;
 

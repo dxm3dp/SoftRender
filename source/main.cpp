@@ -18,14 +18,14 @@ Model *model = nullptr;
 
 int main(int argc, char** argv)
 {
-    std::string filePath = "D:/Work/GitHub/dxm3dp/SoftRender/models/diablo3/diablo3_pose.obj";
-    //std::string filePath = "D:/Work/GitHub/dxm3dp/SoftRender/models/triangle/sj.obj";
-    //std::string filePath = "D:/Work/GitHub/dxm3dp/SoftRender/models/brickwall/brickwall.obj";
+    std::string filePath = "F:/Work/GitHub/dxm3dp/SoftRender/models/diablo3/diablo3_pose.obj";
+    //std::string filePath = "F:/Work/GitHub/dxm3dp/SoftRender/models/triangle/sj.obj";
+    //std::string filePath = "F:/Work/GitHub/dxm3dp/SoftRender/models/brickwall/brickwall.obj";
     model = new Model(filePath.c_str());
 
     get_model_matrix(vec3f(0, 0, -2), vec3f(0, 0, 0), vec3f(1, 1, 1));
     get_view_matrix(eye, center, up);
-    get_projection_matrix(60.f, 1.f, 0.1f, 100.f);
+    get_projection_matrix(45.f, 1.f, 0.1f, 100.f);
     //get_projection_matrix(-1.f / (eye - center).norm());
     get_viewport_matrix(width / 8, height / 8, width * 3 / 4, height * 3 / 4);
 
