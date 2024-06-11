@@ -24,12 +24,37 @@ float far = 100.f;
 
 int main(int argc, char** argv)
 {
-    std::string filePath = "F:/Work/GitHub/dxm3dp/SoftRender/models/diablo3/diablo3_pose.obj";
-    //std::string filePath = "F:/Work/GitHub/dxm3dp/SoftRender/models/AfricanHead/african_head.obj";
-    //std::string filePath = "F:/Work/GitHub/dxm3dp/SoftRender/models/triangle/sj.obj";
-    //std::string filePath = "F:/Work/GitHub/dxm3dp/SoftRender/models/brickwall/brickwall.obj";
-    model = new Model(filePath.c_str());
+    std::string filePath;
+    if (argc >= 2)
+    {
+        int num = std::stoi(std::string(argv[1]));
+        switch (num)
+        {
+        case 1:
+            filePath = "./models/AfricanHead/african_head.obj";
+            break;
+        case 2:
+            filePath = "./models/brickwall/brickwall.obj";
+            break;
+        case 3:
+            filePath = "./models/diablo3/diablo3_pose.obj";
+            break;
+        case 4:
+            filePath = "./models/triangle/sj.obj";
+            break;
+        default:
+            filePath = "./models/diablo3/diablo3_pose.obj";
+            break;
+        }
+    }
+    else
+    {
+        LOGI("Use default model : diablo3");
+        LOGI("If you want to use another model, please call the program like this: SoftRender 1 or SoftRender 2 ...");
+        filePath = "./models/diablo3/diablo3_pose.obj";
+    }
 
+    model = new Model(filePath.c_str());
     set_model_matrix(model_position, model_rotation, model_scale);
     set_view_matrix(eye, center, up);
     set_projection_matrix(fovy, aspect, near, far);
@@ -54,7 +79,7 @@ int main(int argc, char** argv)
         triangle_rasterization(model, screen_pos, framebuffer, zbuffer, shader);
     }
     framebuffer.flip_vertically();
-    framebuffer.write_tga_file("framebuffer.tga", false);
+    framebuffer.write_tga_file("./output/framebuffer.tga", false);
 
     delete model;
     delete[] zbuffer;
