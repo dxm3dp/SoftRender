@@ -1,22 +1,37 @@
 # 软渲染器
 
-从零开始架构软渲染项目。
+## 介绍
 
-软渲染器应该有怎样的结构？
-回想自己经历的软渲染器项目，RealtimeRenderingRaster，TinyRenderer，能够提炼出怎样的结构？
+软渲染器使用 `obj` 格式模型文件，`tga` 格式纹理贴图。在对渲染管线的模拟过程中，顶点数据经历模型（Model），视图（View），透视投影（Perspective Projection），视口（Viewport）变换及三角形光栅化的处理后，由片元着色器对片元进行着色处理，最终生成一帧的图像。目前渲染结果如下图所示。
 
-渲染，肯定要有循环。
-渲染管线，模型加载，模型空间，世界空间，相机空间，裁剪空间，NDC空间，屏幕空间，光栅化，深度测试，片元着色。
+<div align="center">
+  <img src="./Images/01.png" width="300"/>
+</div>
 
-再把这个过程细化一下。
+## 工程构建
 
-读取obj格式模型。
-调用顶点着色器，将模型顶点从模型空间转换到齐次裁剪空间。是否有进行裁剪处理？
-执行透视除法，将齐次裁剪空间的坐标转换到NDC空间。
-执行视口变换，将NDC空间的坐标转换到屏幕空间。
-光栅化，将三角形转换为像素。在光栅化过程中，进行深度测试，只有通过深度测试的片元才会被着色。
-调用片元着色器，对片元进行着色。这一过程包括纹理采样，材质模拟，光照计算。光照计算选择哪种光照模型？材质如何去模拟？
+```bash
+git clone https://github.com/dxm3dp/SoftRender.git
+cd SoftRender
+mkdir build
+cd build
+cmake ..
+cmake --build .
+```
 
-阴影效果，需要额外的深度贴图。
-AO效果，选择哪种实现方式。
-抗锯齿的处理，选择哪种算法。
+
+## 参考资料
+
+项目
+
+- [tinyrenderer](https://github.com/ssloy/tinyrenderer)
+
+课程
+
+- [【GAMES101-现代计算机图形学入门】](https://www.bilibili.com/video/BV1X7411F744/?share_source=copy_web&vd_source=e1b8baee842192a0e6b2b7d9ef8e10ef)
+
+书籍
+
+- 《3D Graphics for Game Programming》
+- 《Real-Time Rendering》
+
