@@ -8,7 +8,7 @@
   <img src="./Images/01.png" width="300"/>
 </div>
 
-## 工程构建
+## 构建
 
 ```bash
 git clone https://github.com/dxm3dp/SoftRender.git
@@ -19,6 +19,23 @@ cmake ..
 cmake --build .
 ```
 
+## 运行
+
+```bash
+cd SoftRender
+```
+
+渲染默认模型（Diablo）：
+
+```bash
+./build/SoftRender
+```
+
+渲染 1 号模型（AfricanHead）:
+
+```bash
+./build/SoftRender 1
+```
 
 ## 参考资料
 
@@ -33,5 +50,4 @@ cmake --build .
 书籍
 
 - 《3D Graphics for Game Programming》
-- 《Real-Time Rendering》
-
+- 《Real-Time Rendering Fourth Edition》
