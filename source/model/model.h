@@ -22,6 +22,7 @@ public:
     std::vector<vec3i> face(int idx) const;
     TGAColor diffuse(vec2f uv) const;
     vec3f normal(vec2f uv) const;
+    float specular(vec2f uv) const;
 
 private:
     void load_texture(const char * filename, const char * suffix, TGAImage & image);
@@ -32,8 +33,9 @@ private:
     std::vector<vec3f> normals;
     std::vector<std::vector<vec3i>> faces;
 
-    TGAImage diffusemap;
-    TGAImage normalmap;
+    TGAImage diffuse_tex;
+    TGAImage normal_tex;
+    TGAImage specular_tex;
 };
 
 END_NAMESPACE(SoftRender)

@@ -65,8 +65,9 @@ Model::Model(const char * filename)
         }
     }
     LOGI("vertices: %d, texcoords: %d, normals: %d, faces: %d", vertices.size(), texcoords.size(), normals.size(), faces.size());
-    load_texture(filename, "_diffuse.tga", diffusemap);
-    load_texture(filename, "_nm_tangent.tga", normalmap);
+    load_texture(filename, "_diffuse.tga", diffuse_tex);
+    load_texture(filename, "_nm_tangent.tga", normal_tex);
+    load_texture(filename, "_spec.tga", specular_tex);
 }
 
 int Model::nfaces() const
@@ -107,20 +108,27 @@ std::vector<vec3i> Model::face(int idx) const
 
 TGAColor Model::diffuse(vec2f uv) const
 {
-    vec2i uvi{(int)(uv[0] * diffusemap.get_width()), (int)(uv[1] * diffusemap.get_height())};
-    return diffusemap.get(uvi.x, uvi.y);
+    vec2i uvi{(int)(uv[0] * diffuse_tex.get_width()), (int)(uv[1] * diffuse_tex.get_height())};
+    return diffuse_tex.get(uvi.x, uvi.y);
 }
 
 vec3f Model::normal(vec2f uv) const
 {
-    vec2i uvi{(int)(uv[0] * normalmap.get_width()), (int)(uv[1] * normalmap.get_height())};
-    TGAColor color = normalmap.get(uvi.x, uvi.y);
+    vec2i uvi{(int)(uv[0] * normal_tex.get_width()), (int)(uv[1] * normal_tex.get_height())};
+    TGAColor color = normal_tex.get(uvi.x, uvi.y);
     vec3f ret;
     for(int i = 0; i < 3; i++)
     {
         ret[i] = color[i] / 255.f * 2.f - 1.f;
     }
     return ret;
+}
+
+float Model::specular(vec2f uvf) const
+{
+    vec2i uv(uvf[0] * specular_tex.get_width(), uvf[1] * specular_tex.get_height());
+
+    return specular_tex.get(uv[0], uv[1])[0]/1.f;
 }
 
 void Model::load_texture(const char * filename, const char * suffix, TGAImage & tex)

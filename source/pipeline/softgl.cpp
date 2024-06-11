@@ -9,7 +9,7 @@ mat4x4 g_view_mat;
 mat4x4 g_projection_mat;
 mat4x4 g_viewport_mat;
 
-void get_model_matrix(vec3f position, vec3f rotation, vec3f scale)
+void set_model_matrix(vec3f position, vec3f rotation, vec3f scale)
 {
     // translate
     mat4x4 translate_mat = mat4x4::identity();
@@ -47,7 +47,7 @@ void get_model_matrix(vec3f position, vec3f rotation, vec3f scale)
     g_model_mat = translate_mat * x_rotate_mat * y_rotate_mat * z_rotate_mat * scale_mat;
 }
 
-void get_view_matrix(vec3f eye, vec3f center, vec3f up)
+void set_view_matrix(vec3f eye, vec3f center, vec3f up)
 {
     vec3f z = (eye - center).normalize();
     vec3f x = cross(up, z).normalize();
@@ -66,7 +66,7 @@ void get_view_matrix(vec3f eye, vec3f center, vec3f up)
     g_view_mat = trans * rot; // First perform the linear transformation, then the translate transformation.
 }
 
-void get_projection_matrix(float fov, float aspect, float n, float f)
+void set_projection_matrix(float fov, float aspect, float n, float f)
 {
     // perspective projection transform
     // canonical view volumn range : x[-1, 1] y[-1, 1] z[-1, 1]
@@ -84,15 +84,17 @@ void get_projection_matrix(float fov, float aspect, float n, float f)
     g_projection_mat = projection_mat;
 }
 
-void get_projection_matrix(float coeff)
+void set_projection_matrix(float coeff)
 {
+    // project onto a plane, where the plane is at z = coeff (coeff < 0)
+
     mat4x4 projection_mat = mat4x4::identity();
     projection_mat[3][2] = coeff;
 
     g_projection_mat = projection_mat;
 }
 
-void get_viewport_matrix(int x, int y, int width, int height)
+void set_viewport_matrix(int x, int y, int width, int height)
 {
     // NDC -> Screen
     mat4x4 viewport_mat = mat4x4::identity();
@@ -129,24 +131,24 @@ void triangle_rasterization(Model *model, std::vector<vec4f> screenPos, TGAImage
                 proj<2>(screenPos[0]/screenPos[0][3]),
                 proj<2>(screenPos[1]/screenPos[1][3]),
                 proj<2>(screenPos[2]/screenPos[2][3]), p);
-            //vec3f bc = barycentricV2(
-                //proj<2>(screenPos[0]/screenPos[0][3]),
-                //proj<2>(screenPos[1]/screenPos[1][3]),
-                //proj<2>(screenPos[2]/screenPos[2][3]), p);
+            // correct barycentric coordnates
+            //float z = screenPos[0][2] * bc[0] + screenPos[1][2] * bc[1] + screenPos[2][2] * bc[2];
+            //float w = screenPos[0][3] * bc[0] + screenPos[1][3] * bc[1] + screenPos[2][3] * bc[2];
+            //int frag_depth = z / w;
 
             // correct barycentric coordnates
-            float z = screenPos[0][2] * bc[0] + screenPos[1][2] * bc[1] + screenPos[2][2] * bc[2];
-            float w = screenPos[0][3] * bc[0] + screenPos[1][3] * bc[1] + screenPos[2][3] * bc[2];
-            int frag_depth = z / w;
+            float z = 1.0 / (bc[0]/screenPos[0][3] + bc[1]/screenPos[1][3] + bc[2]/screenPos[2][3]);
+            float zp = bc[0]/screenPos[0][3] * screenPos[0][2] + bc[1]/screenPos[1][3] * screenPos[1][2] + bc[2]/screenPos[2][3] * screenPos[2][2];
+            zp *= z;
 
             if (bc.x < 0 || bc.y < 0 || bc.z < 0)
                 continue;
-            if (zbuffer[p.x + p.y * framebuffer.get_width()] > frag_depth)
+            if (zbuffer[p.x + p.y * framebuffer.get_width()] > zp)
                 continue;
 
             TGAColor color;
             shader.frag(model, bc, color);
-            zbuffer[p.x + p.y * framebuffer.get_width()] = frag_depth;
+            zbuffer[p.x + p.y * framebuffer.get_width()] = zp;
             framebuffer.set(p.x, p.y, color);
         }
     }

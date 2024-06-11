@@ -10,24 +10,31 @@ using namespace SoftRender;
 const int width = 800;
 const int height = 800;
 
-vec3f eye(0, 0, 4);
-vec3f center(0, 0, 0);
-vec3f up(0, 1, 0);
-
 Model *model = nullptr;
+vec3f model_position(0.f, 0.f, -2.f);
+vec3f model_rotation(0.f, 0.f, 0.f);
+vec3f model_scale(1.f, 1.f, 1.f);
+vec3f eye(0.f, 0.f, 4.f);
+vec3f center(0.f, 0.f, 0.f);
+vec3f up(0.f, 1.f, 0.f);
+float fovy(60.f);
+float aspect = (float)width / (float)height;
+float near = 0.1f;
+float far = 100.f;
 
 int main(int argc, char** argv)
 {
     std::string filePath = "F:/Work/GitHub/dxm3dp/SoftRender/models/diablo3/diablo3_pose.obj";
+    //std::string filePath = "F:/Work/GitHub/dxm3dp/SoftRender/models/AfricanHead/african_head.obj";
     //std::string filePath = "F:/Work/GitHub/dxm3dp/SoftRender/models/triangle/sj.obj";
     //std::string filePath = "F:/Work/GitHub/dxm3dp/SoftRender/models/brickwall/brickwall.obj";
     model = new Model(filePath.c_str());
 
-    get_model_matrix(vec3f(0, 0, -2), vec3f(0, 0, 0), vec3f(1, 1, 1));
-    get_view_matrix(eye, center, up);
-    get_projection_matrix(45.f, 1.f, 0.1f, 100.f);
-    //get_projection_matrix(-1.f / (eye - center).norm());
-    get_viewport_matrix(width / 8, height / 8, width * 3 / 4, height * 3 / 4);
+    set_model_matrix(model_position, model_rotation, model_scale);
+    set_view_matrix(eye, center, up);
+    set_projection_matrix(fovy, aspect, near, far);
+    //set_projection_matrix(-1.f / (eye - center).norm());
+    set_viewport_matrix(0, 0, width, height);
 
     TGAImage framebuffer{width, height, TGAImage::RGB};
     float *zbuffer = new float[width * height];
@@ -35,6 +42,7 @@ int main(int argc, char** argv)
     {
         zbuffer[i] = -std::numeric_limits<float>::max();
     }
+
     Shader shader{g_model_mat, g_model_mat.invert_transpose()};
     std::vector<vec4f> screen_pos(3);
     for(int i = 0; i < model->nfaces(); i++)
