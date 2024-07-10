@@ -1,12 +1,18 @@
 # 软渲染器
 
-## 介绍
+## 说明
 
-软渲染器使用 `obj` 格式模型文件，`tga` 格式纹理贴图。在对渲染管线的模拟过程中，顶点数据经历模型（Model），视图（View），透视投影（Perspective Projection），视口（Viewport）变换及三角形光栅化的处理后，由片元着色器对片元进行着色处理，最终生成一帧的图像。目前渲染结果如下图所示。
+软渲染器加载 `obj` 格式模型文件，`tga` 格式纹理贴图。
+
+在对渲染管线的模拟过程中，模型顶点数据经过模型（Model），视图（View），透视投影（Perspective Projection），视口（Viewport）变换及三角形光栅化的处理后，由片元着色器对片元进行着色处理。着色过程有纹理映射，使用 Phong 光照模型，最终生成一帧图像。
+
+生成的结果图像保存在 `./output/framebuffer.tga` 文件中，目前渲染结果如下图所示。
 
 <div align="center">
   <img src="./Images/01.png" width="300"/>
 </div>
+
+项目中使用的模型是 [tinyrender](https://github.com/ssloy/tinyrenderer) 里面的开源模型。
 
 ## 构建
 
@@ -29,12 +35,6 @@ cd SoftRender
 
 ```bash
 ./build/SoftRender
-```
-
-渲染 1 号模型（AfricanHead）:
-
-```bash
-./build/SoftRender 1
 ```
 
 ## 参考资料

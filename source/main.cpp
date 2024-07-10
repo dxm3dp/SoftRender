@@ -55,10 +55,10 @@ int main(int argc, char** argv)
     }
 
     model = new Model(filePath.c_str());
+
     set_model_matrix(model_position, model_rotation, model_scale);
     set_view_matrix(eye, center, up);
     set_projection_matrix(fovy, aspect, near, far);
-    //set_projection_matrix(-1.f / (eye - center).norm());
     set_viewport_matrix(0, 0, width, height);
 
     TGAImage framebuffer{width, height, TGAImage::RGB};
